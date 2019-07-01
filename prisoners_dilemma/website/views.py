@@ -8,4 +8,4 @@ class HomeView(generic.TemplateView):
 class AccountView(generic.DetailView):
     
 
-class LeaderboardView(generic.)
+class LeaderboardView(generic.ListView):
