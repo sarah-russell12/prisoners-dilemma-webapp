@@ -1,12 +1,20 @@
 from django.test import TestCase
+from django.urls import reverse
 
 # Create your tests here.
 class HomeViewTests(TestCase):
+    def getClientResponse(self):
+        return self.client.get(reverse('home'))
+    
     def test_home_without_user_logged_in(self):
         """
         A home page without a user logged in will show a 'login or signup'
         set of links in the header.
         """
+        response = self.getClientResponse()
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Login")
+        self.assertContains(response, "Sign Up")
         return
         
         

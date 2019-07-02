@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{% block title %} Page Title {% endblock %} | Prisoner's Dilemma</title>
+	</head>
+	<body>
+		<header>
+			<h1>Prisoner's Dilemma</h1>
+		</header>
+		<div class="account-links">
+			{% if user.is_authenticated %}
+				Hi {{ user.username }}! Logout
+			{% else %}
+				<a href="{% url 'login' %}">Login</a> or Sign Up
+			{% endif %}
+		</div>
+		<nav>
+			<ul>
+				<li>Home</li>
+				<li>Play</li>
+				<li>Leaderboard</li>
+			<ul>
+		</nav>
+		<div class="content">
+			<h2>{% block pagetitle %} Page Title {% endblock %}</h2>
+			{% block content %} {% endblock %}
+		</div>
+		<footer>
+		</footer>
+	</body>
+</html>

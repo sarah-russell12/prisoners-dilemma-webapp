@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block pagetitle %}Welcome!{% endblock %}
+
+{% block content %}
+	<p>
+		The Prisoner's Dilemma is a game that examines how two people may or may not cooperate.  The game presents a
+		scenario where cooperation is in the best interest of the two players, however there is an incentive for both
+		players to not cooperate.
+	</p>
+	<p>
+		The Dilemma's scenario is this: You and another player are criminals working together and got arrested.  You are
+		isolated from the other player.  The prosecuters cannot convict both you and the other player on the major crime, 
+		but they can convict you both on secondary charges. The lesser charge carries a term of 1 year in prison.  The 
+		major charge would put you in prison for 2 years.  So if you were convicted on all charges, you would be in
+		prison for the next 3 years.  The prosecuters offer you and the other player this deal: testify against the other player 
+		and your minor charge would be dropped, meaning you serve no time in prison.  However, your partner would get at 
+		least two years in prison.
+	</p>
+	<p>
+		The end results of this scenario are: If both players remain silent, they both serve 1 year in prison.  If one player
+		testifies and the other doesn't, or vice versa, the player who testifies walks free and the other is convicted 
+		on all charges and serves 3 years in prison.  If both players testify against each other, they are both convicted
+		on the major charge and have the minor charge dropped for their cooperation, meaning they both serve 2 years in
+		prison.
+	</p>
+	<p>
+		This app does a verson of the Prisoner's Dilemma called the Iterated Prisoner's Dilemma.  Where the players are
+		given the same scenario a number of times, and have to choose whether to cooperate or not cooperate with each 
+		other each time.  This will use a positive point system rather than a punishment system for simplicity.
+	</p>
+	<h3>Rules</h3>
+	<ol>
+		<li>You will not know who the other player in your game is.</li>
+		<li>You will be asked to pick whether to cooperate or not with the other player.</li>
+		<li>If you both choose to cooperate, you both earn 3 points.</li>
+		<li>If you choose not to cooperate and the other player does, you will get 5 points and they will get no points.</li>
+		<li>If you choose to cooperate and the other player does not, they will get 5 points and you will get no points.</li>
+		<li>If you both choose not to cooperate, you both get 1 point</li>
+		<li>This will repeat for 10 rounds, and then the game ends</li>
+		<li>If you have created an account, your points earned will be added to your account's total, and your actions that game will be recorded.</li>
+	</ol>	
+{% endblock %}
