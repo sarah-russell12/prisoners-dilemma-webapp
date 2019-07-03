@@ -15,7 +15,6 @@ class HomeViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Login")
         self.assertContains(response, "Sign Up")
-        return
         
         
     def test_home_with_user_logged_in(self):
