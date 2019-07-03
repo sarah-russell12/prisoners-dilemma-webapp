@@ -1,18 +1,19 @@
 {% extends 'base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Sign Up{% endblock %}
 
-{% block pagetitle %}Login{% endblock %}
+{% block pagetitle %}Sign Up{% endblock %}
 
 {% block content %}
 	{% if user.is_authenticated %}
-		<p>You are already logged in!<p>
+		<p>You are already signed up for an account!<p>
 		<a href="{% url 'home' %}">Return to the Home page</a>
 	{% else %}
+		<p>
 		<form method="post">
 			{% csrf_token %}
 			{{ form.as_p }}
-			<button type="submit">Login</button>
+			<button type="submit">Sign Up</button>
 		</form>
 	{% endif %}
 {% endblock %}
