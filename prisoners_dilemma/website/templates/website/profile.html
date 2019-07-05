@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Profile{% endblock %}
+
+{% block pagetitle %}
+	{% if user.is_authenticated %}
+		{{ user.username }}
+	{% else %}
+		Profile
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+		<p>Points: {{ user.points }}</p>
+		<p>Cooperative Score: {{ user.cooperative_score }}</p>
+		<p>Games completed: {{ user.games_completed }}</p>
+		<p>Change Password</p>
+	{% else %}
+		<p>You are not logged in.</p>
+	{% endif %}
+{% endblock %}

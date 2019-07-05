@@ -16,9 +16,8 @@ class SignUpView(generic.edit.CreateView):
     # in your views
     success_url = reverse_lazy('login')
     
-class AccountView(generic.DetailView):
-    def random(self):
-        return
+class ProfileView(generic.TemplateView):
+    template_name = 'website/profile.html'
 
 class LeaderboardView(generic.ListView):
     def random(self):

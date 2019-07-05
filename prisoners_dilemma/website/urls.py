@@ -7,9 +7,10 @@ Created on Mon Jul  1 14:17:57 2019
 
 from django.urls import path
 
-from .views import HomeView, SignUpView
+from .views import HomeView, SignUpView, ProfileView
 
 urlpatterns = [
             path('home/', HomeView.as_view(), name='home'),
-            path('signup/', SignUpView.as_view(), name='signup')
+            path('signup/', SignUpView.as_view(), name='signup'),
+            path('profile/', ProfileView.as_view(), name='profile'),
         ]

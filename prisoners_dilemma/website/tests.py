@@ -1,6 +1,34 @@
 from django.test import TestCase
 from django.urls import reverse
 
+from .models import PlayerUser
+
+# Utitlity functions
+def createPlayer(username, password):
+    """
+    Creates a player who has not played the game before
+    """
+    user = PlayerUser.objects.create_user(username=username)
+    user.set_password(password)
+    user.save()
+    return
+
+def createExperiencedPlayer(username, password, points=10, games=1, coop_actions=8):
+    """
+    By default creates a user that has played 1 game and earned 10 points by
+    not cooperating when their opponent cooperated twice, and cooperated the
+    other 8 times when their opponent did not.
+    """
+    user = PlayerUser.objects.create_user(username=username)
+    user.set_password(password)
+    user.points = points
+    user.games_completed = games
+    user.cooperative_actions = coop_actions
+    user.save()
+    user.updateCooperativeScore()
+    user.save()
+    return
+
 # Create your tests here.
 class HomeViewTests(TestCase):
     def getClientResponse(self):
@@ -22,25 +50,67 @@ class HomeViewTests(TestCase):
         A home page with a user logged in will show a 'Hi, username. Logout'
         set of links in the header.
         """
+        createPlayer("usr1", "PssWrd123")
+        self.client.login(username="usr1", password="PssWrd123")
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "usr1")
+        self.assertContains(response, "Logout")
         return
     
-class AccountViewTests(TestCase):
-    def test_account_without_user_logged_in(self):
+class ProfileViewTests(TestCase):
+    def getClientResponse(self):
+        return self.client.get(reverse('profile'))
+    
+    def test_profile_without_user_logged_in(self):
         """
-        An account page without a user logged in will show 'You are not logged
+        An profile page without a user logged in will show 'You are not logged
         in." in the response.
         An account page without a user logged in will show a 'login or signup'
         set of links in the header.
         """
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You are not logged in.")
+        self.assertContains(response, "Login")
+        self.assertContains(response, "Sign Up")
         return
     
     def test_account_with_user_logged_in(self):
         """
-        An account page with a user logged in will show the account information
-        of the user in the response.
+        An profile page with a user logged in will show the account information
+        of the user in the response, like the number of points earned.
         An account page with a user logged in will show a 'Hi, username. Logout'
         set of links in the header.
         """
+        createPlayer("usr1", "PssWrd123")
+        self.client.login(username="usr1", password="PssWrd123")
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "usr1")
+        self.assertContains(response, "Logout")
+        self.assertContains(response, "Points: 0")
+        self.assertContains(response, "Games completed: 0")
+        return
+    
+    def test_account_when_user_has_points(self):
+        """
+        A profile page of a player who has played the game will show stats
+        reflecting that
+        """
+        createExperiencedPlayer("user1", "PssWrd123")
+        self.client.login(username="user1", password="PssWrd123")
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "user1")
+        self.assertContains(response, "Logout")
+        self.assertContains(response, "Points: 10")
+        self.assertContains(response, "Games completed: 1")
+        self.assertContains(response, "Cooperative Score: 0.8")
         return
     
 class LeaderboardViewTests(TestCase):
