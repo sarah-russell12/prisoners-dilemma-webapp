@@ -161,7 +161,7 @@ class SignupViewTests(TestCase):
         self.assertContains(response, "Sign Up")
         self.assertContains(response, "Username")
         self.assertContains(response, "Password")
-        self.assertContains(response, "Password must contain")
+        self.assertContains(response, "password must contain")
         return
         
     def test_signup_with_user_logged_in(self):
@@ -170,7 +170,7 @@ class SignupViewTests(TestCase):
         have an account
         """
         createPlayer("usr", "PssWrd123")
-        self.client.clogin(username="user", password="PssWrd123")
+        self.client.login(username="usr", password="PssWrd123")
         response = self.getClientResponse()
         
         self.assertEqual(response.status_code, 200)
@@ -194,8 +194,25 @@ class ChangePasswordViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Login")
         self.assertContains(response, "Sign Up")
+        self.assertContains(response, "You are not logged in")
+        self.assertContains(response, "Did you forget your password?")
+        return
+
+    def test_change_password_with_user_logged_in(self):
+        """
+        A change password page with a user that is logged in will display the
+        form
+        """ 
+        createPlayer("usr", "PssWrd123")
+        self.client.login(username="usr", password="PssWrd123")
+        response = self.getClientResponse()
         
-        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "usr")
+        self.assertContains(response, "Logout")
+        self.assertContains(response, "New password")
+        self.assertContains(response, "Confirm password")
+        return
     
 class LeaderboardViewTests(TestCase):
     def test_leaderboard_without_user_logged_in(self):

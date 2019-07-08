@@ -6,7 +6,7 @@
 
 {% block content %}
 	{% if user.is_authenticated %}
-		<p>You are already signed up for an account!<p>
+		<p>You already have an account!<p>
 		<a href="{% url 'home' %}">Return to the Home page</a>
 	{% else %}
 		<p>
