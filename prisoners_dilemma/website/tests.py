@@ -112,6 +112,90 @@ class ProfileViewTests(TestCase):
         self.assertContains(response, "Games completed: 1")
         self.assertContains(response, "Cooperative Score: 0.8")
         return
+
+class LoginViewTests(TestCase):
+    def getClientResponse(self):
+        return self.client.get(reverse('login'))
+    
+    def test_login_without_user_logged_in(self):
+        """
+        A login page without a user logged in will display the form
+        """
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Login")
+        self.assertContains(response, "Sign Up")
+        self.assertContains(response, "Username")
+        self.assertContains(response, "Password")
+        return
+        
+    def test_login_with_user_logged_in(self):
+        """
+        A login page with a user logged in will inform them that they are
+        already logged in
+        """
+        createPlayer("usr", "PssWrd123")
+        self.client.login(username="usr", passowrd="PssWrd123")
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "usr")
+        self.assertContains(response, "Logout")
+        self.assertContains(response, "You are already logged in")
+        self.assertContains(response, "Return to the Home page")
+        return
+    
+class SignupViewTests(TestCase):
+    def getClientResponse(self):
+        return self.client.get(reverse('signup'))
+    
+    def test_signup_without_user_logged_in(self):
+        """
+        A sign up page without a user logged in will display the form
+        """
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Login")
+        self.assertContains(response, "Sign Up")
+        self.assertContains(response, "Username")
+        self.assertContains(response, "Password")
+        self.assertContains(response, "Password must contain")
+        return
+        
+    def test_signup_with_user_logged_in(self):
+        """
+        A sign up page with a user logged in will inform them that they already
+        have an account
+        """
+        createPlayer("usr", "PssWrd123")
+        self.client.clogin(username="user", password="PssWrd123")
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "usr")
+        self.assertContains(response, "Logout")
+        self.assertContains(response, "You already have an account")
+        return
+        
+class ChangePasswordViewTests(TestCase):
+    def getClientResponse(self):
+        return self.client.get(reverse('password_change'))
+    
+    def test_change_password_without_user_logged_in(self):
+        """
+        A change password page with a user that is not logged in will inform
+        them they are not logged in and will offer a link to the forgot
+        password page
+        """
+        response = self.getClientResponse()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Login")
+        self.assertContains(response, "Sign Up")
+        
+        
     
 class LeaderboardViewTests(TestCase):
     def test_leaderboard_without_user_logged_in(self):
