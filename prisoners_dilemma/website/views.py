@@ -9,7 +9,7 @@ class HomeView(generic.TemplateView):
     template_name = 'website/home.html'
 
 class SignUpView(generic.edit.CreateView):
-    template_name = 'website/signup.html'
+    template_name = 'website/auth/signup.html'
     form_class = PlayerCreationForm
     
     # You will get migrate errors if you use 'reverse' instead of 'reverse_lazy'

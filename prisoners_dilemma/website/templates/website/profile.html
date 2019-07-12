@@ -15,7 +15,7 @@
 		<p>Points: {{ user.points }}</p>
 		<p>Cooperative Score: {{ user.cooperative_score }}</p>
 		<p>Games completed: {{ user.games_completed }}</p>
-		<p><a href ="{% url 'password_change' %}">Change Password</a></p>
+		<p><a href ="{% url 'change-password' %}">Change Password</a></p>
 	{% else %}
 		<p>You are not logged in.</p>
 	{% endif %}

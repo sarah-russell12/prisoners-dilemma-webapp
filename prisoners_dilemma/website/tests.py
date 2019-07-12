@@ -136,7 +136,7 @@ class LoginViewTests(TestCase):
         already logged in
         """
         createPlayer("usr", "PssWrd123")
-        self.client.login(username="usr", passowrd="PssWrd123")
+        self.client.login(username="usr", password="PssWrd123")
         response = self.getClientResponse()
         
         self.assertEqual(response.status_code, 200)
@@ -181,7 +181,7 @@ class SignupViewTests(TestCase):
         
 class ChangePasswordViewTests(TestCase):
     def getClientResponse(self):
-        return self.client.get(reverse('password_change'))
+        return self.client.get(reverse('change-password'))
     
     def test_change_password_without_user_logged_in(self):
         """
@@ -211,7 +211,7 @@ class ChangePasswordViewTests(TestCase):
         self.assertContains(response, "usr")
         self.assertContains(response, "Logout")
         self.assertContains(response, "New password")
-        self.assertContains(response, "Confirm password")
+        self.assertContains(response, "New password confirmation:")
         return
     
 class LeaderboardViewTests(TestCase):
