@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block pagetitle %}
+	Leaderboard
+{% endblock %}
+
+{% block content %}
+	{% if leaderboard %}
+		<table>
+			<tr>
+				<th>Rank</th>
+				<th>Username</th>
+				<th>Score</th>
+				<th>Cooperative Score</th>
+			</tr>
+			{% for player in leaderboard %}
+			<tr>
+				<td>
+					{{ forloop.counter }}
+				</td>
+				<td>
+					{{ player.username }}
+				</td>
+				<td>
+					{{ player.score }}
+				</td>
+				<td>
+					{{ player.cooperative_score }}
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+		<p>There are no players!</p>
+	{% endif %}
+{% endblock %}

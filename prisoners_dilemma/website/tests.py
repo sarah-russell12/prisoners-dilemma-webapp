@@ -31,7 +31,7 @@ def createExperiencedPlayer(username, password, points=10, games=1, coop_actions
 
 # Create your tests here.
 class HomeViewTests(TestCase):
-    def getClientResponse(self):
+    def _get_client_response(self):
         return self.client.get(reverse('home'))
     
     def test_home_without_user_logged_in(self):
@@ -39,7 +39,7 @@ class HomeViewTests(TestCase):
         A home page without a user logged in will show a 'login or signup'
         set of links in the header.
         """
-        response = self.getClientResponse()
+        response = self._get_client_response()
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Login")
         self.assertContains(response, "Sign Up")
@@ -52,7 +52,7 @@ class HomeViewTests(TestCase):
         """
         createPlayer("usr1", "PssWrd123")
         self.client.login(username="usr1", password="PssWrd123")
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "usr1")
@@ -60,7 +60,7 @@ class HomeViewTests(TestCase):
         return
     
 class ProfileViewTests(TestCase):
-    def getClientResponse(self):
+    def _get_client_response(self):
         return self.client.get(reverse('profile'))
     
     def test_profile_without_user_logged_in(self):
@@ -70,7 +70,7 @@ class ProfileViewTests(TestCase):
         An account page without a user logged in will show a 'login or signup'
         set of links in the header.
         """
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "You are not logged in.")
@@ -87,7 +87,7 @@ class ProfileViewTests(TestCase):
         """
         createPlayer("usr1", "PssWrd123")
         self.client.login(username="usr1", password="PssWrd123")
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "usr1")
@@ -103,7 +103,7 @@ class ProfileViewTests(TestCase):
         """
         createExperiencedPlayer("user1", "PssWrd123")
         self.client.login(username="user1", password="PssWrd123")
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "user1")
@@ -114,14 +114,14 @@ class ProfileViewTests(TestCase):
         return
 
 class LoginViewTests(TestCase):
-    def getClientResponse(self):
+    def _get_client_response(self):
         return self.client.get(reverse('login'))
     
     def test_login_without_user_logged_in(self):
         """
         A login page without a user logged in will display the form
         """
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Login")
@@ -137,7 +137,7 @@ class LoginViewTests(TestCase):
         """
         createPlayer("usr", "PssWrd123")
         self.client.login(username="usr", password="PssWrd123")
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "usr")
@@ -147,14 +147,14 @@ class LoginViewTests(TestCase):
         return
     
 class SignupViewTests(TestCase):
-    def getClientResponse(self):
+    def _get_client_response(self):
         return self.client.get(reverse('signup'))
     
     def test_signup_without_user_logged_in(self):
         """
         A sign up page without a user logged in will display the form
         """
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Login")
@@ -171,7 +171,7 @@ class SignupViewTests(TestCase):
         """
         createPlayer("usr", "PssWrd123")
         self.client.login(username="usr", password="PssWrd123")
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "usr")
@@ -180,7 +180,7 @@ class SignupViewTests(TestCase):
         return
         
 class ChangePasswordViewTests(TestCase):
-    def getClientResponse(self):
+    def _get_client_response(self):
         return self.client.get(reverse('change-password'))
     
     def test_change_password_without_user_logged_in(self):
@@ -189,7 +189,7 @@ class ChangePasswordViewTests(TestCase):
         them they are not logged in and will offer a link to the forgot
         password page
         """
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Login")
@@ -205,7 +205,7 @@ class ChangePasswordViewTests(TestCase):
         """ 
         createPlayer("usr", "PssWrd123")
         self.client.login(username="usr", password="PssWrd123")
-        response = self.getClientResponse()
+        response = self._get_client_response()
         
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "usr")
@@ -215,11 +215,19 @@ class ChangePasswordViewTests(TestCase):
         return
     
 class LeaderboardViewTests(TestCase):
+    def _get_client_response(self):
+        return self.client.get(reverse("leaderboard"))
+    
     def test_leaderboard_without_user_logged_in(self):
         """
         A leaderboard page without a user logged in will show a 'login' link
         and a 'sign up' link in the header.
         """
+        response = self._get_client_response()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Login")
+        self.assertContains(response, "Sign Up")
         return
     
     def test_leaderboard_with_user_logged_in(self):
@@ -227,11 +235,18 @@ class LeaderboardViewTests(TestCase):
         A leaderboard page with a user logged in will show a 
         'Hi, username. Logout' set of links in the header.
         """
+        createPlayer("usr", "PssWrd123")
+        self.client.login(username="usr", password="PssWrd123")
+        response = self._get_client_response()
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "usr")
+        self.assertContains(response, "Logout")
         return
     
     def test_leaderboard_with_no_users(self):
         """
-        A leaderboard page with no users will give a "There is no leaderboard"
+        A leaderboard page with no users will give a "There are no players."
         message in the response.
         """
         return

@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from .forms import PlayerCreationForm
+from models import PlayerUser
 
 # Create your views here.
 class HomeView(generic.TemplateView):
@@ -20,5 +21,11 @@ class ProfileView(generic.TemplateView):
     template_name = 'website/profile.html'
 
 class LeaderboardView(generic.ListView):
+    template_name = 'website/leaderboard.html'
+    queryset = PlayerUser.objects.order_by('-points').filter(score_gt=0)[:100]
+    
+    context_object_name = 'leaderboard'
+    list_display = ['username', 'points', 'cooperative_score']
+    
     def random(self):
         return
