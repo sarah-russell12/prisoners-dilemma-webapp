@@ -2,9 +2,8 @@
 
 {% block title %}Login{% endblock %}
 
-{% block pagetitle %}Login{% endblock %}
-
 {% block content %}
+	<h2>Login</h2>
 	{% if user.is_authenticated %}
 		<p>You are already logged in!<p>
 		<a href="{% url 'home' %}">Return to the Home page</a>

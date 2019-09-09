@@ -2,9 +2,8 @@
 
 {% block title %}Sign Up{% endblock %}
 
-{% block pagetitle %}Sign Up{% endblock %}
-
 {% block content %}
+	<h2>Sign Up</h2>
 	{% if user.is_authenticated %}
 		<p>You already have an account!<p>
 		<a href="{% url 'home' %}">Return to the Home page</a>

@@ -2,15 +2,14 @@
 
 {% block title %}Your Profile{% endblock %}
 
-{% block pagetitle %}
-	{% if user.is_authenticated %}
-		{{ user.username }}
-	{% else %}
-		Profile
-	{% endif %}
-{% endblock %}
-
 {% block content %}
+	<h2>
+		{% if user.is_authenticated %}
+			{{ user.username }}
+		{% else %}
+			Profile
+		{% endif %}	
+	</h2>
 	{% if user.is_authenticated %}
 		<p>Points: {{ user.points }}</p>
 		<p>Cooperative Score: {{ user.cooperative_score }}</p>

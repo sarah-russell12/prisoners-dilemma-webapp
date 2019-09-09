@@ -1,28 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<title>{% block title %} Page Title {% endblock %} | Prisoner's Dilemma</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="{% static 'website/responsive.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'website/navigation.css' %}">
 	</head>
 	<body>
-		<header>
+		<div class="header">
 			<h1>Prisoner's Dilemma</h1>
-		</header>
-		<div class="account-links">
-			{% if user.is_authenticated %}
-				Hi <a href="{% url 'profile' %}">{{ user.username }}</a>! <a href="{% url 'logout' %}">Logout</a>
-			{% else %}
-				<a href="{% url 'login' %}">Login</a> or <a href="{% url 'signup' %}">Sign Up</a>
-			{% endif %}
 		</div>
-		<nav>
+		<div class="navigation">
 			<ul>
 				<li><a href="{% url 'home' %}">Home</a></li>
 				<li>Play</li>
 				<li><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
+				{% if user.is_authenticated %}
+				<li style="float:right"><a href="{% url 'logout' %}">Logout</a></li>
+				<li style="float:right">Hi <a href="{% url 'profile' %}">{{ user.username }}</a>!</li>
+				{% else %}
+				<li style="float:right"><a href="{% url 'signup' %}">Sign Up</a></li>
+				<li style="float:right"><a href="{% url 'login' %}">Login</a></li>
+				{% endif %}
 			<ul>
-		</nav>
-		<div class="content">
-			<h2>{% block pagetitle %} Page Title {% endblock %}</h2>
+		</div>
+		<div class="row content">
 			{% block content %} {% endblock %}
 		</div>
 		<footer>
