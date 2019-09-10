@@ -1,0 +1,60 @@
+body {
+	background-image: url("images/bricks.gif");
+	font-size: 100%;
+}
+
+.header {
+	color: #ffffff;
+	text-align: center;
+}
+
+h1 {
+	font-size: 3.0em;
+	font-family: Georgia, Times, serif;
+	font-variant: small-caps;
+}
+
+h2 {
+	font-size: 2.0em;
+	font-family: Georgia, Times, serif;
+	font-variant: small-caps;
+}
+
+.content {
+	background-color: #ffffff;
+	font-size: 1.0em;
+	font-family: Verdana, Arial, sans-serif;
+}
+
+.navigation {
+	color: #ffffff;
+	font-family: Georgia, Times, serif;
+	font-size: 1.25em;
+	font-variant: small-caps;
+	margin: 0;
+	padding: 0;
+}
+
+.navigation ul {
+	background-color: #b4b4b4;
+	list-style-type: none;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+}
+
+.navigation li {
+	display: inline-block;
+	float: left;
+	padding: 20px;
+	text-align: center;
+}
+
+li a {
+	text-decoration: none;
+	color: #ffffff;
+}
+
+.navigation li:hover {
+	background-color: #000000;
+}

@@ -3,6 +3,7 @@
 {% block title %}Leaderboard{% endblock %}
 
 {% block content %}
+	<div class="col-12 col-s-12">
 	<h2>Leaderboard</h2>
 	{% if leaderboard %}
 		<table>
@@ -32,4 +33,5 @@
 	{% else %}
 		<p>There are no top players!</p>
 	{% endif %}
+	</div>
 {% endblock %}

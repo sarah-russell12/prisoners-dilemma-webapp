@@ -3,6 +3,7 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+	<div class="col-12 col-s-12">
 	<h2>Login</h2>
 	{% if user.is_authenticated %}
 		<p>You are already logged in!<p>
@@ -14,4 +15,5 @@
 			<button type="submit">Login</button>
 		</form>
 	{% endif %}
+	</div>
 {% endblock %}

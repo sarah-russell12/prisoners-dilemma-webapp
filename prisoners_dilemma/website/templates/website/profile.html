@@ -3,6 +3,7 @@
 {% block title %}Your Profile{% endblock %}
 
 {% block content %}
+	<div class="col-12 col-s-12">
 	<h2>
 		{% if user.is_authenticated %}
 			{{ user.username }}
@@ -18,4 +19,5 @@
 	{% else %}
 		<p>You are not logged in.</p>
 	{% endif %}
+	</div>
 {% endblock %}
