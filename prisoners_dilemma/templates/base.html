@@ -1,14 +1,16 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>{% block title %} Page Title {% endblock %} | Prisoner's Dilemma</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" type="text/css" href="{% static 'website/responsive.css' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'website/style.css' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'website/leaderboard.css' %}">
-		<link rel="stylesheet" type="text/css" href="{% static 'website/form.css' %}">
-	</head>
+<head>
+    <title>{% block title %} Title {% endblock %} | Prisoner's Dilemma</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'website/responsive.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'website/style.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'website/leaderboard.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'website/form.css' %}" />
+    <script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+</head>
 	<body>
 		<div class="header">
 			<h1>Prisoner's Dilemma</h1>
@@ -25,8 +27,9 @@
 				<li style="float:right"><a href="{% url 'signup' %}">Sign Up</a></li>
 				<li style="float:right"><a href="{% url 'login' %}">Login</a></li>
 				{% endif %}
-			<ul>
+			</ul>
 		</div>
+        <h2>{% block pagetitle %} Page Title {% endblock %}</h2>
 		<div class="row content">
 			{% block content %} {% endblock %}
 		</div>

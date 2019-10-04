@@ -1,0 +1,36 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Play{% endblock %}
+
+{% block pagetitle %}Welcome!{% endblock %}
+
+{% block content%}
+<script type="text/javascript" src="{% static 'website/js/game.js' %}"></script>
+<div class="col-6 col-s-6">
+    <div id="queue">
+        Press the button below to join the game queue!<br />
+        <button type="button" onclick="enqueue()">Queue Up</button>
+    </div>
+    <div id="waiting" style="display: none;">
+        Waiting for <span id="wait_for_what">a game!</span>
+    </div>
+    <div id="game" style="display: none;">
+        Your game is called <span id="game_name"></span>
+        <button type="button">Leave Game</button>
+    </div>
+</div>
+<div class="col-6 col-s-6">
+    <h2>Rules</h2>
+    <ol>
+        <li>You will not know who the other player in your game is.</li>
+        <li>You will be asked to pick whether to cooperate or not with the other player.</li>
+        <li>If you both choose to cooperate, you both earn 3 points.</li>
+        <li>If you choose not to cooperate and the other player does, you will get 5 points and they will get no points.</li>
+        <li>If you choose to cooperate and the other player does not, they will get 5 points and you will get no points.</li>
+        <li>If you both choose not to cooperate, you both get 1 point</li>
+        <li>This will repeat for 10 rounds, and then the game ends</li>
+        <li>If you have created an account, your points earned will be added to your account's total, and your actions that game will be recorded.</li>
+    </ol>
+</div>
+
+{% endblock %}

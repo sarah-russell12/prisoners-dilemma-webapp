@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{51e5c8da-49a2-4cda-958f-a2b2b0e3046d}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile />
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="prisoners_dilemma\manage.py" />
+    <Compile Include="prisoners_dilemma\prisoners_dilemma\settings.py" />
+    <Compile Include="prisoners_dilemma\prisoners_dilemma\urls.py" />
+    <Compile Include="prisoners_dilemma\prisoners_dilemma\wsgi.py" />
+    <Compile Include="prisoners_dilemma\prisoners_dilemma\__init__.py" />
+    <Compile Include="prisoners_dilemma\website\admin.py" />
+    <Compile Include="prisoners_dilemma\website\apps.py" />
+    <Compile Include="prisoners_dilemma\website\forms.py" />
+    <Compile Include="prisoners_dilemma\website\migrations\0001_initial.py" />
+    <Compile Include="prisoners_dilemma\website\migrations\0002_auto_20190703_1517.py" />
+    <Compile Include="prisoners_dilemma\website\migrations\__init__.py" />
+    <Compile Include="prisoners_dilemma\website\models.py" />
+    <Compile Include="prisoners_dilemma\website\sio.py" />
+    <Compile Include="prisoners_dilemma\website\tests.py" />
+    <Compile Include="prisoners_dilemma\website\urls.py" />
+    <Compile Include="prisoners_dilemma\website\views.py" />
+    <Compile Include="prisoners_dilemma\website\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="prisoners_dilemma\templates\base.html" />
+    <Content Include="prisoners_dilemma\website\static\website\form.css" />
+    <Content Include="prisoners_dilemma\website\static\website\images\bricks.gif" />
+    <Content Include="prisoners_dilemma\website\static\website\leaderboard.css" />
+    <Content Include="prisoners_dilemma\website\static\website\responsive.css" />
+    <Content Include="prisoners_dilemma\website\static\website\style.css" />
+    <Content Include="prisoners_dilemma\website\templates\website\auth\change-password-done.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\auth\change-password.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\auth\login.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\auth\password-reset-confirm.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\auth\password-reset-done.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\auth\password-reset.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\auth\signup.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\home.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\leaderboard.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\profile.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="prisoners_dilemma" />
+    <Folder Include="prisoners_dilemma\prisoners_dilemma" />
+    <Folder Include="prisoners_dilemma\templates" />
+    <Folder Include="prisoners_dilemma\website" />
+    <Folder Include="prisoners_dilemma\website\migrations" />
+    <Folder Include="prisoners_dilemma\website\static\" />
+    <Folder Include="prisoners_dilemma\website\static\website" />
+    <Folder Include="prisoners_dilemma\website\static\website\images" />
+    <Folder Include="prisoners_dilemma\website\templates\" />
+    <Folder Include="prisoners_dilemma\website\templates\website" />
+    <Folder Include="prisoners_dilemma\website\templates\website\auth" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>
