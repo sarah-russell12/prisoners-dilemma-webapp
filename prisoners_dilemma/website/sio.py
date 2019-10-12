@@ -11,6 +11,7 @@ import socketio
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 SERVER = socketio.Server(async_mode='eventlet')
+THREAD = None
 
 COUNT = 0
 
@@ -20,6 +21,12 @@ def server_update_thread():
     while True:
         SERVER.sleep(10)
         _update_queue()
+
+def run_thread():
+    global SERVER
+    global THREAD
+    if THREAD is None:
+        SERVER.start_background_task(server_update_thread)
 
 def _update_queue():
     global PLAYER_QUEUE

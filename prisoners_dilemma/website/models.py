@@ -19,31 +19,6 @@ class PlayerUser(AbstractUser):
             self.cooperative_score = 0
         else:
             self.cooperative_score = self.cooperative_actions / (self.games_completed * 10)
-<<<<<<< HEAD
-
-class GameManager():
-    def __init__(self):
-        models.Manager.__init__(self)
-        self.game_count = Game.objects.count()
-
-    def create_game():
-        self.game_count += 1
-        name = "game{count}".format(count=self.game_count)
-        game = Game(name=name)
-        game.save()
-        return name
-
-    def register_player(game_name, is_player_one, player_id=None):
-        game = Games.objects.get(name__iexact=game_name)
-        if is_player_one and player_id:
-            game.player_one = PlayerUser.objects.get(pk=player_id)
-        elif player_id:
-            game.player_two = PlayerUser.objects.get(pk=player_id)
-        game.save()
-
-    def update_game(game_name, is_player_one, action):
-        game - Games.objects.get(name__iexact=game_name)
-        messages = game.update(is_player_one, action)
 
 
 class Game(models.Model):
@@ -63,6 +38,3 @@ class Game(models.Model):
 
     player_one_points = models.IntegerField(verbose_name="points player one has earned", default=0)
     player_two_points = models.IntegerField(verbose_name="points player two has earned", default=0)
-=======
-    
->>>>>>> parent of 8abdd42... Started integrating socketio into project
