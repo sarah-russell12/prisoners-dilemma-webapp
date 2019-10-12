@@ -9,8 +9,16 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 
 import os
 
+
 from django.core.wsgi import get_wsgi_application
+from socketio import WSGIApp
+
+from website.sio import SERVER
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'prisoners_dilemma.settings')
 
 application = get_wsgi_application()
+
+application = WSGIApp(SERVER, application)
+import eventlet
+eventlet.wsgi.server(eventlet.listen('', 8000), application)

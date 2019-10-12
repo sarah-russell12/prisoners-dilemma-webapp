@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{51e5c8da-49a2-4cda-958f-a2b2b0e3046d}</ProjectGuid>
+    <ProjectGuid>{6f81e7f2-4f3e-4d2c-9c91-39b8d1ae24f5}</ProjectGuid>
     <ProjectHome />
     <StartupFile />
     <SearchPath />
@@ -29,6 +29,7 @@
     <Compile Include="prisoners_dilemma\website\forms.py" />
     <Compile Include="prisoners_dilemma\website\migrations\0001_initial.py" />
     <Compile Include="prisoners_dilemma\website\migrations\0002_auto_20190703_1517.py" />
+    <Compile Include="prisoners_dilemma\website\migrations\0003_game.py" />
     <Compile Include="prisoners_dilemma\website\migrations\__init__.py" />
     <Compile Include="prisoners_dilemma\website\models.py" />
     <Compile Include="prisoners_dilemma\website\sio.py" />
@@ -41,6 +42,7 @@
     <Content Include="prisoners_dilemma\templates\base.html" />
     <Content Include="prisoners_dilemma\website\static\website\form.css" />
     <Content Include="prisoners_dilemma\website\static\website\images\bricks.gif" />
+    <Content Include="prisoners_dilemma\website\static\website\js\game.js" />
     <Content Include="prisoners_dilemma\website\static\website\leaderboard.css" />
     <Content Include="prisoners_dilemma\website\static\website\responsive.css" />
     <Content Include="prisoners_dilemma\website\static\website\style.css" />
@@ -53,6 +55,7 @@
     <Content Include="prisoners_dilemma\website\templates\website\auth\signup.html" />
     <Content Include="prisoners_dilemma\website\templates\website\home.html" />
     <Content Include="prisoners_dilemma\website\templates\website\leaderboard.html" />
+    <Content Include="prisoners_dilemma\website\templates\website\play.html" />
     <Content Include="prisoners_dilemma\website\templates\website\profile.html" />
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +67,7 @@
     <Folder Include="prisoners_dilemma\website\static\" />
     <Folder Include="prisoners_dilemma\website\static\website" />
     <Folder Include="prisoners_dilemma\website\static\website\images" />
+    <Folder Include="prisoners_dilemma\website\static\website\js" />
     <Folder Include="prisoners_dilemma\website\templates\" />
     <Folder Include="prisoners_dilemma\website\templates\website" />
     <Folder Include="prisoners_dilemma\website\templates\website\auth" />

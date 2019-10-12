@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 <head>
     <title>{% block title %} Title {% endblock %} | Prisoner's Dilemma</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,17 @@
     <link rel="stylesheet" type="text/css" href="{% static 'website/style.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'website/leaderboard.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'website/form.css' %}" />
-    <script type="text/javascript" src="//code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
 </head>
+=======
+	<head>
+		<title>{% block title %} Page Title {% endblock %} | Prisoner's Dilemma</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="{% static 'website/responsive.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'website/style.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'website/leaderboard.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'website/form.css' %}">
+	</head>
+>>>>>>> parent of 8abdd42... Started integrating socketio into project
 	<body>
 		<div class="header">
 			<h1>Prisoner's Dilemma</h1>
@@ -18,7 +27,7 @@
 		<div class="navigation">
 			<ul>
 				<li><a href="{% url 'home' %}">Home</a></li>
-				<li>Play</li>
+				<li><a href="{% url 'play' %}">Play</a></li>
 				<li><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
 				{% if user.is_authenticated %}
 				<li style="float:right"><a href="{% url 'logout' %}">Logout</a></li>
@@ -27,12 +36,20 @@
 				<li style="float:right"><a href="{% url 'signup' %}">Sign Up</a></li>
 				<li style="float:right"><a href="{% url 'login' %}">Login</a></li>
 				{% endif %}
-			</ul>
+			<ul>
 		</div>
-        <h2>{% block pagetitle %} Page Title {% endblock %}</h2>
+<<<<<<< HEAD
+        <div class="content">
+            <h2>{% block pagetitle %} Page Title {% endblock %}</h2>
+            <div class="row content">
+                {% block content %} {% endblock %}
+            </div>
+        </div>
+=======
 		<div class="row content">
 			{% block content %} {% endblock %}
 		</div>
+>>>>>>> parent of 8abdd42... Started integrating socketio into project
 		<footer>
 		</footer>
 	</body>

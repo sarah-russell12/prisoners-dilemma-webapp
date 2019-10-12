@@ -1,10 +1,13 @@
 ﻿{% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Play{% endblock %}
 
-{% block pagetitle %}Welcome!{% endblock %}
+{% block pagetitle %}Play!{% endblock %}
 
-{% block content%}
+{% block content %}
+<script type='text/javascript' src='//code.jquery.com/jquery-3.2.1.slim.min.js'></script>
+<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js'></script>
 <script type="text/javascript" src="{% static 'website/js/game.js' %}"></script>
 <div class="col-6 col-s-6">
     <div id="queue">

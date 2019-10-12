@@ -2,37 +2,36 @@
 
 {% block title %}Leaderboard{% endblock %}
 
-{% block pagetitle %}Leaderboard{% endblock %}
-
 {% block content %}
-<div class="col-12 col-s-12">
-    {% if leaderboard %}
-    <table>
-        <tr>
-            <th>Rank</th>
-            <th>Username</th>
-            <th>Score</th>
-            <th>Cooperative Score</th>
-        </tr>
-        {% for player in leaderboard %}
-        <tr>
-            <td>
-                {{ forloop.counter }}
-            </td>
-            <td>
-                {{ player.username }}
-            </td>
-            <td>
-                {{ player.points }}
-            </td>
-            <td>
-                {{ player.cooperative_score }}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% else %}
-    <p>There are no top players!</p>
-    {% endif %}
-</div>
+	<div class="col-12 col-s-12">
+	<h2>Leaderboard</h2>
+	{% if leaderboard %}
+		<table>
+			<tr>
+				<th>Rank</th>
+				<th>Username</th>
+				<th>Score</th>
+				<th>Cooperative Score</th>
+			</tr>
+			{% for player in leaderboard %}
+			<tr>
+				<td>
+					{{ forloop.counter }}
+				</td>
+				<td>
+					{{ player.username }}
+				</td>
+				<td>
+					{{ player.points }}
+				</td>
+				<td>
+					{{ player.cooperative_score }}
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+	{% else %}
+		<p>There are no top players!</p>
+	{% endif %}
+	</div>
 {% endblock %}

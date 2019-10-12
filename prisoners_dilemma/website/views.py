@@ -4,6 +4,9 @@ from django.views import generic
 
 from .forms import PlayerCreationForm
 from .models import PlayerUser
+from .sio import SERVER, server_update_thread
+
+THREAD = None
 
 # Create your views here.
 class HomeView(generic.TemplateView):
@@ -29,3 +32,9 @@ class LeaderboardView(generic.ListView):
     
     def random(self):
         return
+
+def play(request):
+    global THREAD
+    if THREAD is None:
+        THREAD = SERVER.start_background_task(server_update_thread)
+    return render(request, 'website/play.html')

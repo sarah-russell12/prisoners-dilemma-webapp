@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "prisoners-dilemma-webapp", "prisoners-dilemma-webapp.pyproj", "{51E5C8DA-49A2-4CDA-958F-A2B2B0E3046D}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "prisoners-dilemma-webapp", "prisoners-dilemma-webapp.pyproj", "{6F81E7F2-4F3E-4D2C-9C91-39B8D1AE24F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +11,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{51E5C8DA-49A2-4CDA-958F-A2B2B0E3046D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{51E5C8DA-49A2-4CDA-958F-A2B2B0E3046D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F81E7F2-4F3E-4D2C-9C91-39B8D1AE24F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F81E7F2-4F3E-4D2C-9C91-39B8D1AE24F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {5A3DF935-77C2-4CDC-86A7-85C099135019}
+		SolutionGuid = {17A61007-E93B-4826-B042-55A7B0AA111C}
 	EndGlobalSection
 EndGlobal

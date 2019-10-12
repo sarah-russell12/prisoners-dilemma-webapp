@@ -11,12 +11,12 @@ import socketio
 
 basedir = os.path.dirname(os.path.realpath(__file__))
 SERVER = socketio.Server(async_mode='eventlet')
-THREAD = None
+
+COUNT = 0
 
 PLAYER_QUEUE = Queue()
 
 def server_update_thread():
-    count = 0
     while True:
         SERVER.sleep(10)
         _update_queue()
@@ -24,12 +24,10 @@ def server_update_thread():
 def _update_queue():
     global PLAYER_QUEUE
     if PLAYER_QUEUE.qsize() > 2:
-        player1 = _get_player()
-        player2 = _get_player()
+        player_1 = _get_player()
+        player_2 = _get_player()
         # Instert start game here
-        room = ""
-        SERVER.enter_room(player1, room)
-        SERVER.enter_room(player2, room)
+        _start_game(player_1, player_2)
 
 def _get_player():
     global PLAYER_QUEUE
@@ -43,6 +41,17 @@ def _get_player():
         except KeyError:
             player_sid = PLAYER_QUEUE.get()
     return player_sid
+
+def _start_game(player_1, player_2):
+    global COUNT
+    global SERVER
+    COUNT += 1
+    room = "Game " + str(COUNT)
+    SERVER.enter_room(player1, room)
+    SERVER.enter_room(player2, room)
+    data = {"game_name" : room}
+    SERVER.emit("game_found", data = data, room = room)
+    return
 
 @SERVER.event
 def connect(sid, environ):
