@@ -18,9 +18,11 @@ COUNT = 0
 PLAYER_QUEUE = Queue()
 
 def server_update_thread():
+    global SERVER
     while True:
         SERVER.sleep(10)
         _update_queue()
+        SERVER.emit("connected", {"data" : "You are still connected"})
 
 def run_thread():
     global SERVER
@@ -63,7 +65,7 @@ def _start_game(player_1, player_2):
 @SERVER.event
 def connect(sid, environ):
     print("Player connected. sid = {sid}".format(sid=sid))
-    server.emit('connected', {'data' : 'You are connected'})
+    server.emit('connected', {'data' : 'You are connected'}, room=sid)
 
 @SERVER.event
 def disconnect(sid):

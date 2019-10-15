@@ -21,4 +21,4 @@ application = get_wsgi_application()
 
 application = WSGIApp(SERVER, application)
 
-eventlet.wsgi.server(eventlet.listen('127.0.0.1', 8001), application)
+eventlet.wsgi.server(eventlet.listen(('', 8000)), application)
