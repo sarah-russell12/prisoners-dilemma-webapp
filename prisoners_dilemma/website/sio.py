@@ -32,7 +32,7 @@ def run_thread():
 
 def _update_queue():
     global PLAYER_QUEUE
-    if PLAYER_QUEUE.qsize() > 2:
+    if PLAYER_QUEUE.qsize() >= 2:
         player_1 = _get_player()
         player_2 = _get_player()
         # Instert start game here
@@ -56,8 +56,8 @@ def _start_game(player_1, player_2):
     global SERVER
     COUNT += 1
     room = "Game " + str(COUNT)
-    SERVER.enter_room(player1, room)
-    SERVER.enter_room(player2, room)
+    SERVER.enter_room(player_1, room)
+    SERVER.enter_room(player_2, room)
     data = {"game_name" : room}
     SERVER.emit("game_found", data = data, room = room)
     return
@@ -65,7 +65,7 @@ def _start_game(player_1, player_2):
 @SERVER.event
 def connect(sid, environ):
     print("Player connected. sid = {sid}".format(sid=sid))
-    server.emit('connected', {'data' : 'You are connected'}, room=sid)
+    SERVER.emit('connected', {'data' : 'You are connected'}, room=sid)
 
 @SERVER.event
 def disconnect(sid):

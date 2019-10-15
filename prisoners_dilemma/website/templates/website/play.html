@@ -5,7 +5,10 @@
 {% block pagetitle %}Play!{% endblock %}
 
 {% block content %}
+{% load static %}
+<script type='text/javascript' src="{% static 'website/js/game.js' %}"></script>
 <div class="col-6 col-s-6">
+    <h2>Play the Game!</h2>
     <div id="queue">
         Press the button below to join the game queue!<br />
         <button type="button" onclick="enqueue()">Queue Up</button>

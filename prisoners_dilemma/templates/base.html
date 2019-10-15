@@ -8,9 +8,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/style.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/leaderboard.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'website/css/form.css' %}">
-    <script type='text/javascript' async="async" src='//code.jquery.com/jquery-3.2.1.slim.min.js'></script>
-    <script type='text/javascript' async="async" src='//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js'></script>
-    <script type='text/javascript' defer="defer" src="{% static 'website/js/game.js' %}"></script>
+    <script type='text/javascript' src='//code.jquery.com/jquery-3.2.1.slim.min.js'></script>
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js'></script>
 </head>
 	<body>
 		<div class="header">
@@ -31,7 +30,6 @@
 			<ul>
 		</div>
         <div class="content">
-            <h2>{% block pagetitle %} Page Title {% endblock %}</h2>
             <div class="row">
                 {% block content %} {% endblock %}
             </div>

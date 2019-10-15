@@ -1,0 +1,20 @@
+input[type=text], input[type=password], input[type=email] {
+	width: 25%;
+	border-radius: 4px;
+	box-sizing: border-box;
+	padding: 10px;
+}
+
+input[type=button], input[type=submit] {
+	width: 10%;
+	border-radius: 4px;
+	box-sizing: border-box;
+	padding: 10px;
+}
+
+label {
+	width: 15%;
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 10px;
+}

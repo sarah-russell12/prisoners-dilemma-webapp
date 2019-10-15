@@ -8,6 +8,8 @@ Created on Mon Jul  1 14:17:57 2019
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
+
+
 from .views import *
 
 
