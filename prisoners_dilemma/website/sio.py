@@ -5,6 +5,7 @@ The server-side python-socketio code for queueing players and handling player in
 """
 
 from queue import Queue
+from .gamemanager import MANAGER
 
 import os
 import socketio
@@ -12,8 +13,6 @@ import socketio
 basedir = os.path.dirname(os.path.realpath(__file__))
 SERVER = socketio.Server(async_mode='eventlet')
 THREAD = None
-
-COUNT = 0
 
 PLAYER_QUEUE = Queue()
 
@@ -52,10 +51,9 @@ def _get_player():
     return player_sid
 
 def _start_game(player_1, player_2):
-    global COUNT
     global SERVER
     COUNT += 1
-    room = "Game " + str(COUNT)
+    room = "Game " + MANAGER.get_count()
     SERVER.enter_room(player_1, room)
     SERVER.enter_room(player_2, room)
     data = {"game_name" : room}
@@ -69,6 +67,7 @@ def connect(sid, environ):
 
 @SERVER.event
 def disconnect(sid):
+    SERVER.rooms(sid)
     print("Player disconnected. sid = {sid}".format(sid=sid))
 
 
@@ -78,4 +77,10 @@ def _queue_player(sid):
     global PLAYER_QUEUE
     PLAYER_QUEUE.put(sid)
     SERVER.emit("enqueue_response", {"response" : "You have been queued"}, room=sid)
+
+@SERVER.on("connect_game")
+def _register_player(sid, message):
+    game_name = message["game_name"]
+    player_id = message["player_id"]
+    #enter manager
 

@@ -20,6 +20,15 @@
         Your game is called <span id="game_name"></span>
         <button type="button">Leave Game</button>
     </div>
+    <div id="player_info" style="display: none;">
+        <span id="player_id">
+            {% if user.is_authenticated %}
+            {{ user.id }}
+            {% else %}
+            None
+            {% endif %}
+        </span>
+    </div>
 </div>
 <div class="col-6 col-s-6">
     <h2>Rules</h2>
