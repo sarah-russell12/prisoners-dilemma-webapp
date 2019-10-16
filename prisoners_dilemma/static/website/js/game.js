@@ -19,6 +19,9 @@ socket.on("enqueue_response", (message) => {
 
 socket.on("game_found", (message) => {
     console.log(message);
+    document.getElementById("waiting").style.display = "none";
+    document.getElementById("game").style.display = "initial";
+    document.getElementById("game_name").innerText = message["game_name"];
     var data = {};
     data["player_id"] = $("#player_id").text();
     data["game_name"] = message["game_name"];

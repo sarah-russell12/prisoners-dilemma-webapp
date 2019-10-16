@@ -52,8 +52,7 @@ def _get_player():
 
 def _start_game(player_1, player_2):
     global SERVER
-    COUNT += 1
-    room = "Game " + MANAGER.get_count()
+    room = "Game " + str(MANAGER.get_count() + 1)
     SERVER.enter_room(player_1, room)
     SERVER.enter_room(player_2, room)
     data = {"game_name" : room}

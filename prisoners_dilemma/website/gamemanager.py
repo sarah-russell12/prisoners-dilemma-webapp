@@ -27,3 +27,4 @@ class GameManager(object):
         game.save()
         return
 
+MANAGER = GameManager()
