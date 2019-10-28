@@ -15,17 +15,32 @@ class PlayerUser(AbstractUser):
     def __str__(self):
         return self.username
     
-    def updateCooperativeScore(self):
+    def update_cooperative_score(self):
         if self.games_completed == 0:
             self.cooperative_score = 0
         else:
             self.cooperative_score = self.cooperative_actions / (self.games_completed * 10)
+        self.save()
+        return
+
+    def completed_game(self, points, coop):
+        self.points += points
+        self.cooperative_actions += coop
+        self.games_completed += 1
+        self.save()
+
+        self.update_cooperative_score()
+        return
 
 
 class Game(models.Model):
     name = models.CharField(primary_key=True, max_length = 200, verbose_name="name of the game")
     player_one = models.ForeignKey(PlayerUser, on_delete=models.SET_NULL, verbose_name="player one", related_name="+", blank=True, null=True)
     player_two = models.ForeignKey(PlayerUser, on_delete=models.SET_NULL, verbose_name="player two", blank=True, null=True)
+    is_player_one_unregistered = models.BooleanField(verbose_name="Is player one not logged in", default=False)
+    is_player_two_unregistered = models.BooleanField(verbose_name="Is player two not logged in", default=False)
+    player_one_coop = models.IntegerField(verbose_name="player one's cooperative actions this game", default=0)
+    player_two_coop = models.IntegerField(verbose_name="player two's cooperative actions this game", default=0)
     round = models.IntegerField(verbose_name="current round of the game", default=1)
     
     PLAYER_ACTIONS = [
@@ -40,62 +55,90 @@ class Game(models.Model):
     player_one_points = models.IntegerField(verbose_name="points player one has earned", default=0)
     player_two_points = models.IntegerField(verbose_name="points player two has earned", default=0)
 
+    def add_player(self, player_id):
+        # TODO: add seamless player addition
+        return
+
     def is_complete(self):
         return self.round == 10 and self._round_complete()
 
     def _round_complete(self):
-        return self.player_one_action is not "NONE" and self.player_two_action is not "NONE"
+        return self.player_one_action != "NONE" and self.player_two_action != "NONE"
 
-    def resolve_round(self):
-        if self._round_complete():
-            messages = self._resolve_points()
+    def action(self, player_id, action):
+        if self.is_complete():
+            return self._error_completed_game()
+        if player_id == self.player_one_id or player_id == "ONE":
+            if self.player_one_action != "NONE":
+                return self._error_already_acted()
+            self.player_one_action = action
+        elif player_id == self.player_two_id or player_id == "TWO":
+            if self.player_two_action != "NONE":
+                return self._error_already_acted()
+            self.player_two_action = action
+        else:
+            return self._error_player_not_in_game()
+        self.save()
+        return self._resolve_round()
+
+    def _error_completed_game(self):
+        response = self._get_game_state()
+        response["error"] = self.name + " is already completed"
+        return response
+
+    def _error_already_acted(self):
+        response = self._get_game_state()
+        response["error"] = "You have already acted this round"
+        return response
+
+    def _error_player_not_in_game(self):
+        response = self._get_game_state()
+        response["error"] = "You are not a player in " + self.name
+        return response
+
+    def _resolve_round(self):
+        if self.is_complete():
+            self._resolve_points()
+            response = self._get_game_state()
+            self._end_game()
+        elif self._round_complete():
+            self._resolve_points()
+            response = self._get_game_state()
             self._next_round()
         else:
-            messages = self._waiting_on_player()
-        return messages
+            response = self._get_game_state()
+        return response
 
     def _resolve_points(self):
         if self.player_one_action == "COOP" and self.player_two_action == "COOP":
-            messages = self._both_cooperate()
+            self.player_one_points += 3
+            self.player_two_points += 3
+            self.player_one_coop += 1
+            self.player_two_coop += 1
         elif self.player_one_action == "COOP" and self.player_two_action == "SELF":
-            messages = self._player_two_advantage()
+            self.player_one_points += 0
+            self.player_two_points += 5
+            self.player_one_coop += 1
         elif self.player_one_action == "SELF" and self.player_two_action == "COOP":
-            messages = self._player_one_advantage()
+            self.player_one_points += 5
+            self.player_two_points += 0
+            self.player_two_coop += 1
         else:
-            messages = self._both_selfish()
-        return messages
-
-    def _both_cooperate(self):
-        self.player_one_points += 3
-        self.player_two_points += 3
+            self.player_one_points += 1
+            self.player_two_points += 1
         self.save()
-        message_1 = {"your_action" : "cooperate", "opponent_action" : "cooperate", "your_points" : self.player_one_points, "opponent_points" : self.player_two_points}
-        message_2 = {"your_action" : "cooperate", "opponent_action" : "cooperate", "your_points" : self.player_two_points, "opponent_points" : self.player_one_points}
-        return (message_1, message_2)
+        return
 
-    def _player_two_advantage(self):
-        self.player_one_points += 0
-        self.player_two_points += 5
-        self.save()
-        message_1 = {"your_action" : "cooperate", "opponent_action" : "not cooperate", "your_points" : self.player_one_points, "opponent_points" : self.player_two_points}
-        message_2 = {"your_action" : "not cooperate", "opponent_action" : "cooperate", "your_points" : self.player_two_points, "opponent_points" : self.player_one_points}
-        return (message_1, message_2)
-
-    def _player_one_advantage(self):
-        self.player_one_points += 5
-        self.player_two_points += 0
-        self.save()
-        message_1 = {"your_action" : "not cooperate", "opponent_action" : "cooperate", "your_points" : self.player_one_points, "opponent_points" : self.player_two_points}
-        message_2 = {"your_action" : "cooperate", "opponent_action" : "not cooperate", "your_points" : self.player_two_points, "opponent_points" : self.player_one_points}
-        return (message_1, message_2)
-
-    def _both_selfish(self):
-        self.player_one_points += 1
-        self.player_two_points += 1
-        self.save()
-        message_1 = {"your_action" : "not cooperate", "opponent_action" : "not cooperate", "your_points" : self.player_one_points, "opponent_points" : self.player_two_points}
-        message_2 = {"your_action" : "not cooperate", "opponent_action" : "not cooperate", "your_points" : self.player_two_points, "opponent_points" : self.player_one_points}
-        return (message_1, message_2)
+    def _end_game(self):
+        if self.player_one != None:
+            player_one = PlayerUser.objects.get(pk=self.player_one_id)
+            player_one.completed_game(self.player_one_points, self.player_one_coop)
+            player_one.save()
+        if self.player_two != None:
+            player_two = PlayerUser.objects.get(pk=self.player_two_id)
+            player_two.completed_game(self.player_two_points, self.player_two_coop)
+            player_two.save()
+        return
 
     def _next_round(self):
         self.round += 1
@@ -103,17 +146,48 @@ class Game(models.Model):
         self.player_two_action = "NONE"
         self.save()
 
-    def _waiting_on_player(self):
-        if self.player_one_action == "NONE":
-            message_1 = {"status" : "your opponent has acted"}
-            message_2 = {"status" : "waiting on your opponent"}
+    def _get_game_state(self):
+        response = {}
+        response["player_one_points"] = self.player_one_points
+        response["player_two_points"] = self.player_two_points
+        response["round"] = self._get_round()
+        response["player_one_action"] = self._get_player_one_action()
+        response["player_two_action"] = self._get_player_two_action()
+        response["error"] = None
+        return response
+
+    def _get_round(self):
+        if self._round_complete() and not self.is_complete():
+            return self.round + 1
         else:
-            message_1 = {"status" : "waiting on your opponent"}
-            message_2 = {"status" : "your opponent has acted"}
-        return (message_1, message_2)
+            return self.round
+
+    def _get_player_one_action(self):
+        if self._round_complete():
+            if self.player_one_action == "COOP":
+                return "cooperated"
+            else:
+                return "did not cooperate"
+        else:
+            if self.player_one_action != "NONE":
+                return "acted"
+            else:
+                return "not acted yet"
+
+    def _get_player_two_action(self):
+        if self._round_complete():
+            if self.player_two_action == "COOP":
+                return "cooperated"
+            else:
+                return "did not cooperate"
+        else:
+            if self.player_two_action != "NONE":
+                return "acted"
+            else:
+                return "not acted yet"
 
     @classmethod
-    def new_game(game_name):
+    def new_game(self, game_name):
         game = Game.objects.create(name=game_name)
         return game
 

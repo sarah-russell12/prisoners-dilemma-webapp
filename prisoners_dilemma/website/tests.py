@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import PlayerUser
+from .models import PlayerUser, Game
 
 # Utitlity functions
 def createPlayer(username, password):
@@ -166,21 +166,6 @@ class SignupViewTests(TestCase):
 class ChangePasswordViewTests(TestCase):
     def _get_client_response(self):
         return self.client.get(reverse('change-password'))
-    
-    def test_change_password_without_user_logged_in(self):
-        """
-        A change password page with a user that is not logged in will inform
-        them they are not logged in and will offer a link to the forgot
-        password page
-        """
-        response = self._get_client_response()
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Login")
-        self.assertContains(response, "Sign Up")
-        self.assertContains(response, "You are not logged in")
-        self.assertContains(response, "Did you forget your password?")
-        return
 
     def test_change_password_with_user_logged_in(self):
         """
@@ -210,7 +195,7 @@ def createExperiencedPlayer(username, password, points=10, games=1, coop_actions
     user.games_completed = games
     user.cooperative_actions = coop_actions
     user.save()
-    user.updateCooperativeScore()
+    user.update_cooperative_score()
     user.save()
     return
     
@@ -336,3 +321,277 @@ class LeaderboardViewTests(TestCase):
         # usr3
         self.assertNotContains(response, "usr3")
         return
+
+class GameModelTests(TestCase):
+    def setUp(self):
+        createPlayer("usr1", "psswrd123")
+        createPlayer("usr2", "psswrd456")
+        Game.new_game("Game 1")
+        return super().setUp()
+
+    def _add_players_to_game(self):
+        game = Game.objects.get(name="Game 1")
+        usr1 = PlayerUser.objects.get(username="usr1")
+        usr2 = PlayerUser.objects.get(username="usr2")
+
+        game.player_one = usr1
+        game.player_two = usr2
+        
+        game.save()
+        return game
+
+    def test_game_creation(self):
+        game = Game.objects.get(name="Game 1")
+
+        self.assertIsNone(game.player_one)
+        self.assertIsNone(game.player_two)
+        self.assertEqual(game.round, 1)
+        self.assertEqual(game.player_one_action, "NONE")
+        self.assertEqual(game.player_two_action, "NONE")
+        self.assertEqual(game.player_one_points, 0)
+        self.assertEqual(game.player_two_points, 0)
+        return
+
+    def test_adding_registered_players(self):
+        game = Game.objects.get(name="Game 1")
+
+        usr1 = PlayerUser.objects.get(username="usr1")
+
+        response = game.add_player(usr1.id)
+
+        self.assertEqual(game.player_one_id, usr1.id)
+        self.assertIsNone(game.player_two)
+        self.assertEqual(game.round, 1)
+        self.assertEqual(game.player_one_action, "NONE")
+        self.assertEqual(game.player_two_action, "NONE")
+        self.assertEqual(game.player_one_points, 0)
+        self.assertEqual(game.player_two_points, 0)
+
+        usr2 = PlayerUser.objects.get(username = "usr2")
+
+        response = game.add_player(usr2.id)
+
+        self.assertEqual(game.player_one_id, usr1.id)
+        self.assertEqual(game.player_two_id, usr2.id)
+        self.assertEqual(game.round, 1)
+        self.assertEqual(game.player_one_action, "NONE")
+        self.assertEqual(game.player_two_action, "NONE")
+        self.assertEqual(game.player_one_points, 0)
+        self.assertEqual(game.player_two_points, 0)
+        return
+
+    def test_adding_unregistered_player(self):
+        return
+
+    def test_action_with_players(self):
+        game = Game.objects.get(name="Game 1")
+        usr1 = PlayerUser.objects.get(username="usr1")
+        usr2 = PlayerUser.objects.get(username="usr2")
+
+        game.player_one = usr1
+        game.player_two = usr2
+
+        game.save()
+
+        response = game.action(usr1.id, "COOP")
+
+        self.assertEqual(game.player_one_action, "COOP")
+        self.assertEqual(game.player_two_action, "NONE")
+        return
+
+    def test_action_with_player_with_no_id(self):
+        """
+        One feature of the webapp is to be able to play the game without having to create an account.
+        The game must account for this.
+        """
+        game = Game.objects.get(name="Game 1")
+        
+        response = game.action("ONE", "COOP")
+
+        self.assertEqual(game.player_one_action, "COOP")
+        self.assertEqual(game.player_two_action, "NONE")
+        return
+
+    def test_action_with_invalid_id(self):
+        """
+        Game's responses should indicate the presence of an error if one occurs
+        """
+        game = Game.objects.get(name="Game 1")
+
+        response = game.action("THREE", "COOP")
+
+        self.assertEqual(response["error"], "You are not a player in Game 1")
+        return
+
+    def test_game_responses(self):
+        game = self._add_players_to_game()
+
+        # awaiting other player
+        response = game.action("ONE", "COOP")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 0)
+        self.assertEqual(response["player_two_points"], 0)
+        self.assertEqual(response["player_one_action"], "acted")
+        self.assertEqual(response["player_two_action"], "not acted yet")
+        self.assertEqual(response["round"], 1)
+
+        # other player acted, both get points
+        response = game.action("TWO", "COOP")
+        
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 3)
+        self.assertEqual(response["player_two_points"], 3)
+        self.assertEqual(response["player_one_action"], "cooperated")
+        self.assertEqual(response["player_two_action"], "cooperated")
+        self.assertEqual(response["round"], 2)
+
+        # player two gets points
+        response = game.action("TWO", "SELF")
+        
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 3)
+        self.assertEqual(response["player_two_points"], 3)
+        self.assertEqual(response["player_one_action"], "not acted yet")
+        self.assertEqual(response["player_two_action"], "acted")
+        self.assertEqual(response["round"], 2)
+
+        response = game.action("ONE", "COOP")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 3)
+        self.assertEqual(response["player_two_points"], 8)
+        self.assertEqual(response["player_one_action"], "cooperated")
+        self.assertEqual(response["player_two_action"], "did not cooperate")
+        self.assertEqual(response["round"], 3)
+
+        # player one gets points
+        response = game.action("ONE", "SELF")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 3)
+        self.assertEqual(response["player_two_points"], 8)
+        self.assertEqual(response["player_one_action"], "acted")
+        self.assertEqual(response["player_two_action"], "not acted yet")
+        self.assertEqual(response["round"], 3)
+
+        response = game.action("TWO", "COOP")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 8)
+        self.assertEqual(response["player_two_points"], 8)
+        self.assertEqual(response["player_one_action"], "did not cooperate")
+        self.assertEqual(response["player_two_action"], "cooperated")
+        self.assertEqual(response["round"], 4)
+
+        # both players get one point
+        response = game.action("ONE", "SELF")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 8)
+        self.assertEqual(response["player_two_points"], 8)
+        self.assertEqual(response["player_one_action"], "acted")
+        self.assertEqual(response["player_two_action"], "not acted yet")
+        self.assertEqual(response["round"], 4)
+
+        response = game.action("TWO", "SELF")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 9)
+        self.assertEqual(response["player_two_points"], 9)
+        self.assertEqual(response["player_one_action"], "did not cooperate")
+        self.assertEqual(response["player_two_action"], "did not cooperate")
+        self.assertEqual(response["round"], 5)
+        return
+
+    def test_game_resolution(self):
+        game = self._add_players_to_game()
+
+        game, response = self._run_cooperative_game(game)
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 30)
+        self.assertEqual(response["player_two_points"], 30)
+        self.assertEqual(response["player_one_action"], "cooperated")
+        self.assertEqual(response["player_two_action"], "cooperated")
+        self.assertEqual(response["round"], 10)
+
+        usr1 = PlayerUser.objects.get(username="usr1")
+
+        self.assertEqual(usr1.points, 30)
+        self.assertEqual(usr1.cooperative_actions, 10)
+        self.assertEqual(usr1.games_completed, 1)
+        self.assertEqual(usr1.cooperative_score, 1.0)
+
+        usr2 = PlayerUser.objects.get(username="usr2")
+        
+        self.assertEqual(usr2.points, 30)
+        self.assertEqual(usr2.cooperative_actions, 10)
+        self.assertEqual(usr2.games_completed, 1)
+        self.assertEqual(usr2.cooperative_score, 1.0)
+        return
+
+    def _run_cooperative_game(self, game):
+        usr1 = PlayerUser.objects.get(username="usr1")
+        usr2 = PlayerUser.objects.get(username="usr2")
+
+        for i in range(0,10):
+            game.action(usr1.id, "COOP")
+            response = game.action(usr2.id, "COOP")
+
+        return game, response
+
+    def test_player_acts_twice_in_one_round(self):
+        game = self._add_players_to_game()
+
+        usr1 = PlayerUser.objects.get(username="usr1")
+
+        response = game.action(usr1.id, "COOP")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 0)
+        self.assertEqual(response["player_two_points"], 0)
+        self.assertEqual(response["player_one_action"], "acted")
+        self.assertEqual(response["player_two_action"], "not acted yet")
+        self.assertEqual(response["round"], 1)
+
+        response = game.action(usr1.id, "SELF")
+        
+        self.assertEqual(response["error"], "You have already acted this round")
+        self.assertEqual(response["player_one_points"], 0)
+        self.assertEqual(response["player_two_points"], 0)
+        self.assertEqual(response["player_one_action"], "acted")
+        self.assertEqual(response["player_two_action"], "not acted yet")
+        self.assertEqual(response["round"], 1)
+
+    def test_player_acts_in_completed_game(self):
+        game = self._add_players_to_game()
+
+        game, response = self._run_cooperative_game(game)
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_one_points"], 30)
+        self.assertEqual(response["player_two_points"], 30)
+        self.assertEqual(response["player_one_action"], "cooperated")
+        self.assertEqual(response["player_two_action"], "cooperated")
+        self.assertEqual(response["round"], 10)
+
+        usr1 = PlayerUser.objects.get(username="usr1")
+        response = game.action(usr1.id, "COOP")
+
+        self.assertEqual(response["error"], "Game 1 is already completed")
+        self.assertEqual(response["player_one_points"], 30)
+        self.assertEqual(response["player_two_points"], 30)
+        self.assertEqual(response["player_one_action"], "cooperated")
+        self.assertEqual(response["player_two_action"], "cooperated")
+        self.assertEqual(response["round"], 10)
+
+        usr2 = PlayerUser.objects.get(username="usr2")
+        response = game.action(usr2.id, "COOP")
+
+        self.assertEqual(response["error"], "Game 1 is already completed")
+        self.assertEqual(response["player_one_points"], 30)
+        self.assertEqual(response["player_two_points"], 30)
+        self.assertEqual(response["player_one_action"], "cooperated")
+        self.assertEqual(response["player_two_action"], "cooperated")
+        self.assertEqual(response["round"], 10)
