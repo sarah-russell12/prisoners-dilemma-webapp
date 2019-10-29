@@ -359,6 +359,9 @@ class GameModelTests(TestCase):
 
         response = game.add_player(usr1.id)
 
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_id"], usr1.id)
+
         self.assertEqual(game.player_one_id, usr1.id)
         self.assertIsNone(game.player_two)
         self.assertEqual(game.round, 1)
@@ -371,8 +374,33 @@ class GameModelTests(TestCase):
 
         response = game.add_player(usr2.id)
 
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_id"], usr2.id)
+
         self.assertEqual(game.player_one_id, usr1.id)
         self.assertEqual(game.player_two_id, usr2.id)
+        self.assertEqual(game.round, 1)
+        self.assertEqual(game.player_one_action, "NONE")
+        self.assertEqual(game.player_two_action, "NONE")
+        self.assertEqual(game.player_one_points, 0)
+        self.assertEqual(game.player_two_points, 0)
+        return
+
+    def test_adding_unregistered_players(self):
+        game = Game.objects.get(name="Game 1")
+
+        response = game.add_player("NONE")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_id"], "ONE")
+
+        response = game.add_player("NONE")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_id"], "TWO")
+
+        self.assertIsNone(game.player_one)
+        self.assertIsNone(game.player_two)
         self.assertEqual(game.round, 1)
         self.assertEqual(game.player_one_action, "NONE")
         self.assertEqual(game.player_two_action, "NONE")

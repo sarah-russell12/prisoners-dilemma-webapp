@@ -56,8 +56,39 @@ class Game(models.Model):
     player_two_points = models.IntegerField(verbose_name="points player two has earned", default=0)
 
     def add_player(self, player_id):
-        # TODO: add seamless player addition
-        return
+        if self.player_one == None and not self.is_player_one_unregistered:
+            response = self._add_player_one(player_id)
+        elif self.player_two == None and not self.is_player_two_unregistered:
+            response = self._add_player_two(player_id)
+        else:
+            response = self._error_already_two_players()
+        return response
+
+    def _add_player_one(self, player_id):
+        if player_id == "NONE":
+            self.is_player_one_unregistered = True
+            response = {"error" : None, "player_id" : "ONE"}
+        else:
+            try:
+                self.player_one = PlayerUser.objects.get(pk=player_id)
+                response = {"error" : None, "player_id" : player_id}
+            except ObjectDoesNotExist:
+                response = {"error" : "Invalid player ID", "player_id" : player_id}
+        self.save()
+        return response
+
+    def _add_player_two(self, player_id):
+        if player_id == "NONE":
+            self.is_player_two_unregistered = True
+            response = {"error" : None, "player_id" : "TWO"}
+        else:
+            try:
+                self.player_two = PlayerUser.objects.get(pk=player_id)
+                response = {"error" : None, "player_id" : player_id}
+            except ObjectDoesNotExist:
+                response = {"error" : "Invalid player ID", "player_id" : player_id}
+        self.save()
+        return response
 
     def is_complete(self):
         return self.round == 10 and self._round_complete()
