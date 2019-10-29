@@ -408,8 +408,39 @@ class GameModelTests(TestCase):
         self.assertEqual(game.player_two_points, 0)
         return
 
-    def test_adding_unregistered_player(self):
+    def test_adding_player_to_full_game(self):
+        game = Game.objects.get(name="Game 1")
+
+        response = game.add_player("NONE")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_id"], "ONE")
+
+        response = game.add_player("NONE")
+
+        self.assertIsNone(response["error"])
+        self.assertEqual(response["player_id"], "TWO")
+
+        response = game.add_player("NONE")
+
+        self.assertEqual(response["error"], "Game 1 is full")
+        self.assertEqual(response["player_id"], "NONE")
+
+        usr1 = PlayerUser.objects.get(username="usr1")
+        response = game.add_player(usr1.id)
+
+        self.assertEqual(response["error"], "Game 1 is full")
+        self.assertEqual(response["player_id"], usr1.id)
         return
+
+    def test_adding_player_with_invalid_id(self):
+        game = Game.objects.get(name="Game 1")
+        invalid_id = 10000
+
+        response = game.add_player(invalid_id)
+
+        self.assertEqual(response["error"], "Invalid player ID")
+        self.assertEqual(response["player_id"], invalid_id)
 
     def test_action_with_players(self):
         game = Game.objects.get(name="Game 1")

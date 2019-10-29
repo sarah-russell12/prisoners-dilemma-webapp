@@ -61,34 +61,39 @@ class Game(models.Model):
         elif self.player_two == None and not self.is_player_two_unregistered:
             response = self._add_player_two(player_id)
         else:
-            response = self._error_already_two_players()
+            response = self._response_player_addition(self.name + " is full", player_id)
         return response
 
     def _add_player_one(self, player_id):
+        message = None
         if player_id == "NONE":
             self.is_player_one_unregistered = True
-            response = {"error" : None, "player_id" : "ONE"}
+            player = "ONE"
         else:
             try:
+                player = player_id
                 self.player_one = PlayerUser.objects.get(pk=player_id)
-                response = {"error" : None, "player_id" : player_id}
             except ObjectDoesNotExist:
-                response = {"error" : "Invalid player ID", "player_id" : player_id}
+                message = "Invalid player ID"
         self.save()
-        return response
+        return self._response_player_addition(message, player)
 
     def _add_player_two(self, player_id):
+        message = None
         if player_id == "NONE":
             self.is_player_two_unregistered = True
-            response = {"error" : None, "player_id" : "TWO"}
+            player = "TWO"
         else:
             try:
+                player = player_id
                 self.player_two = PlayerUser.objects.get(pk=player_id)
-                response = {"error" : None, "player_id" : player_id}
             except ObjectDoesNotExist:
-                response = {"error" : "Invalid player ID", "player_id" : player_id}
+                message = "Invalid player ID"
         self.save()
-        return response
+        return self._response_player_addition(message, player)
+
+    def _response_player_addition(self, message, player_id):
+        return {"error" : message, "player_id" : player_id}
 
     def is_complete(self):
         return self.round == 10 and self._round_complete()
