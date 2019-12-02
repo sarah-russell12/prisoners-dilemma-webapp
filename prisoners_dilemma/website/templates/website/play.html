@@ -7,27 +7,16 @@
 {% block content %}
 {% load static %}
 <script type='text/javascript' src="{% static 'website/js/game.js' %}"></script>
-<div class="col-6 col-s-6">
+{% if user.is_authenticated %}
+<script type='text/javascript'>window.localStorage.setItem("player_id", "{ { user.id } }");</script>
+{% else %}
+<script type='text/javascript'>window.localStorage.setItem("player_id", "NONE");</script>
+{% endif %}
+<div id="game_container" class="col-6 col-s-6">
     <h2>Play the Game!</h2>
-    <div id="queue">
-        Press the button below to join the game queue!<br />
+    <div id="start">
+        <p>Press the button to queue for a game!</p>
         <button type="button" onclick="enqueue()">Queue Up</button>
-    </div>
-    <div id="waiting" style="display: none;">
-        Waiting for <span id="wait_for_what">a game!</span>
-    </div>
-    <div id="game" style="display: none;">
-        Your game is called <span id="game_name"></span>
-        <button type="button">Leave Game</button>
-    </div>
-    <div id="player_info" style="display: none;">
-        <span id="player_id">
-            {% if user.is_authenticated %}
-            {{ user.id }}
-            {% else %}
-            None
-            {% endif %}
-        </span>
     </div>
 </div>
 <div class="col-6 col-s-6">
@@ -36,8 +25,8 @@
         <li>You will not know who the other player in your game is.</li>
         <li>You will be asked to pick whether to cooperate or not with the other player.</li>
         <li>If you both choose to cooperate, you both earn 3 points.</li>
-        <li>If you choose not to cooperate and the other player does, you will get 5 points and they will get no points.</li>
-        <li>If you choose to cooperate and the other player does not, they will get 5 points and you will get no points.</li>
+        <li>If you do not cooperate and your opponent cooperates, you will get 5 points and they will get 0 points.</li>
+        <li>If you cooperate and your opponent doesn't cooperate, you will get 0 points and they will get 5 points.</li>
         <li>If you both choose not to cooperate, you both get 1 point</li>
         <li>This will repeat for 10 rounds, and then the game ends</li>
         <li>If you have created an account, your points earned will be added to your account's total, and your actions that game will be recorded.</li>

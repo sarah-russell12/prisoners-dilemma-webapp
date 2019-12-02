@@ -83,3 +83,8 @@ def _register_player(sid, message):
     player_id = message["player_id"]
     #enter manager
 
+@SERVER.on("dummy_message")
+def _dummy_message(sid, message):
+    print("A message was sent")
+    SERVER.emit("message_received", data=message, room=sid)
+

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -35,10 +36,10 @@ class PlayerUser(AbstractUser):
 
 class Game(models.Model):
     name = models.CharField(primary_key=True, max_length = 200, verbose_name="name of the game")
-    player_one = models.ForeignKey(PlayerUser, on_delete=models.SET_NULL, verbose_name="player one", related_name="+", blank=True, null=True)
-    player_two = models.ForeignKey(PlayerUser, on_delete=models.SET_NULL, verbose_name="player two", blank=True, null=True)
-    is_player_one_unregistered = models.BooleanField(verbose_name="Is player one not logged in", default=False)
-    is_player_two_unregistered = models.BooleanField(verbose_name="Is player two not logged in", default=False)
+    player_one = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name="player one", related_name="+", blank=True, null=True)
+    player_two = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name="player two", blank=True, null=True)
+    is_player_one_present = models.BooleanField(verbose_name="Is there an unregistered player one", default=False)
+    is_player_two_present = models.BooleanField(verbose_name="Is there an unregistered player two", default=False)
     player_one_coop = models.IntegerField(verbose_name="player one's cooperative actions this game", default=0)
     player_two_coop = models.IntegerField(verbose_name="player two's cooperative actions this game", default=0)
     round = models.IntegerField(verbose_name="current round of the game", default=1)
@@ -56,49 +57,41 @@ class Game(models.Model):
     player_two_points = models.IntegerField(verbose_name="points player two has earned", default=0)
 
     def add_player(self, player_id):
-        if self.player_one == None and not self.is_player_one_unregistered:
+        if self.is_player_one_present == False:
             response = self._add_player_one(player_id)
-        elif self.player_two == None and not self.is_player_two_unregistered:
+        elif self.is_player_two_present == False:
             response = self._add_player_two(player_id)
         else:
-            response = self._response_player_addition(self.name + " is full", player_id)
+            response = self._response_player_addition(self.name + " is full", player_id, "NONE")
         return response
 
     def _add_player_one(self, player_id):
-        message = None
-        if player_id == "NONE":
-            self.is_player_one_unregistered = True
-            player = "ONE"
-        else:
+        if player_id != "NONE":
             try:
-                player = player_id
                 self.player_one = PlayerUser.objects.get(pk=player_id)
             except ObjectDoesNotExist:
-                message = "Invalid player ID"
+                return self._response_player_addition("Invalid player ID", player_id, "NONE")
+        self.is_player_one_present = True
         self.save()
-        return self._response_player_addition(message, player)
+        return self._response_player_addition(None, player_id, "ONE")
 
     def _add_player_two(self, player_id):
-        message = None
-        if player_id == "NONE":
-            self.is_player_two_unregistered = True
-            player = "TWO"
-        else:
+        if player_id != "NONE":
             try:
-                player = player_id
                 self.player_two = PlayerUser.objects.get(pk=player_id)
             except ObjectDoesNotExist:
-                message = "Invalid player ID"
+                return self._response_player_addition("Invalid player ID", player_id, "NONE")
+        self.is_player_two_present = True
         self.save()
-        return self._response_player_addition(message, player)
+        return self._response_player_addition(None, player_id, "TWO")
 
-    def _response_player_addition(self, message, player_id):
-        return {"error" : message, "player_id" : player_id}
+    def _response_player_addition(self, err, player_id, standin_id):
+        return {"error" : err, "player_id" : player_id, "standin_id" : standin_id}
 
     def is_complete(self):
-        return self.round == 10 and self._round_complete()
+        return self.round == 10 and self.round_complete()
 
-    def _round_complete(self):
+    def round_complete(self):
         return self.player_one_action != "NONE" and self.player_two_action != "NONE"
 
     def action(self, player_id, action):
@@ -137,7 +130,7 @@ class Game(models.Model):
             self._resolve_points()
             response = self._get_game_state()
             self._end_game()
-        elif self._round_complete():
+        elif self.round_complete():
             self._resolve_points()
             response = self._get_game_state()
             self._next_round()
@@ -193,13 +186,13 @@ class Game(models.Model):
         return response
 
     def _get_round(self):
-        if self._round_complete() and not self.is_complete():
+        if self.round_complete() and not self.is_complete():
             return self.round + 1
         else:
             return self.round
 
     def _get_player_one_action(self):
-        if self._round_complete():
+        if self.round_complete():
             if self.player_one_action == "COOP":
                 return "cooperated"
             else:
@@ -211,7 +204,7 @@ class Game(models.Model):
                 return "not acted yet"
 
     def _get_player_two_action(self):
-        if self._round_complete():
+        if self.round_complete():
             if self.player_two_action == "COOP":
                 return "cooperated"
             else:
@@ -225,6 +218,7 @@ class Game(models.Model):
     @classmethod
     def new_game(self, game_name):
         game = Game.objects.create(name=game_name)
+        game.save()
         return game
 
     @staticmethod
