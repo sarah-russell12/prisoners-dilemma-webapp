@@ -5,7 +5,7 @@ The server-side python-socketio code for queueing players and handling player in
 """
 
 from queue import Queue
-from .gamemanager import MANAGER
+from . import gamemanager as Manager
 
 import os
 import socketio

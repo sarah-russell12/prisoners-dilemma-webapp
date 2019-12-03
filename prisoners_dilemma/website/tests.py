@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .models import PlayerUser, Game
-from .gamemanager import GameManager
+
 
 # Utitlity functions
 def createPlayer(username, password):
@@ -653,11 +653,144 @@ class GameModelTests(TestCase):
         self.assertEqual(response["round"], 10)
 
 
-class GameManagerTests(TestCase):
-    def setUp(self):
-        self._manager = GameManager()
-        return super().setUp()
+from . import gamemanager as Manager
 
+class GameManagerTests(TestCase):
     def test_game_count(self):
-        response = self._manager.create_game()
-        pass
+        count = Manager.get_count()
+
+        self.assertIsNotNone(count)
+        self.assertEqual(count, 0)
+        
+        # assert count is 1 after creating a game
+        Game.new_game("Game 1")
+
+        count = Manager.get_count()
+        self.assertEqual(count, 1)
+        return
+
+    def test_game_creation(self):
+        """
+        The game management code should return a successful game created event and a package of data
+        with the newly created game's name and empty error field
+        """
+        event, data = Manager.create_game()
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "game_created")
+        self.assertEqual(data["game_name"], "Game 1")
+        self.assertIsNone(data["error"])
+        return
+
+    def test_adding_registered_players(self):
+        """
+        The game management code should return a successful player addition event and the game's
+        response when a player with a valid id is added to an existing game that still requires
+        players
+        """
+        event, data = Manager.create_game()
+
+        self.assertEqual(event, "game_created")
+        self.assertEqual(data["game_name"], "Game 1")
+        self.assertIsNone(data["error"])
+
+        createPlayer("usr1", "pass123")
+        player = PlayerUser.objects.get(username="usr1")
+
+        event, data = Manager.add_player("Game 1", player.id)
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(data["player_id"], player.id)
+        self.assertEqual(data["standin_id"], "ONE")
+
+        # Add second player
+        createPlayer("usr2", "pass123")
+        player = PlayerUser.objects.get(username="usr2")
+
+        event, data = Manager.add_player("Game 1", player.id)
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(data["player_id"], player.id)
+        self.assertEqual(data["standin_id"], "TWO")
+
+    def test_adding_unregistered_players(self):
+        """
+        The game management code should return a successful player addition event and the game's
+        response when an unregistered is added to an existing game that still requires players
+        """
+        event, data = Manager.create_game()
+
+        self.assertEqual(event, "game_created")
+        self.assertEqual(data["game_name"], "Game 1")
+        self.assertIsNone(data["error"])
+
+        event, data = Manager.add_player("Game 1", "NONE")
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(data["player_id"], "NONE")
+        self.assertEqual(data["standin_id"], "ONE")
+        self.assertIsNone(data["error"])
+
+        # Add second player
+        event, data = Manager.add_player("Game 1", "NONE")
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(data["player_id"], "NONE")
+        self.assertEqual(data["standin_id"], "TWO")
+        self.assertIsNone(data["error"])
+
+    def _create_test_game(self):
+        event, data = Manager.create_game()
+        event, data = Manager.add_player("Game 1", "NONE")
+        event, data = Manager.add_player("Game 1", "NONE")
+
+    def test_adding_player_to_full_game(self):
+        """
+        The game management code should return an error event and the game's response when a
+        player, registered or unregistered, attempts to join a full game
+        """
+        self._create_test_game()
+
+        # Unregistered player
+        event, data = Manager.add_player("Game 1", "NONE")
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "error")
+        self.assertEqual(data["player_id"], "NONE")
+        self.assertEqual(data["standin_id"], "NONE")
+        self.assertEqual(data["error"], "Game 1 is full")
+
+        # Registered player
+        createPlayer("usr3", "pass123")
+        player = PlayerUser.objects.get(username="usr3")
+
+        event, data = Manager.add_player("Game 1", player.id)
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "error")
+        self.assertEqual(data["player_id"], player.id)
+        self.assertEqual(data["standin_id"], "NONE")
+        self.assertEqual(data["error"], "Game 1 is full")
+
+    def test_adding_player_to_nonexisting_game(self):
+        """
+        The game management code should return an error event and a data package that explains that
+        the game does not exist when a player attempts to join a game that does not exist.
+        """
+        event, data = Manager.add_player("Game 2", "NONE")
+
+        self.assertIsNotNone(event)
+        self.assertIsNotNone(data)
+        self.assertEqual(event, "error")
+        self.assertEqual(data["error"], "Game 2 is not the name of an existing game")

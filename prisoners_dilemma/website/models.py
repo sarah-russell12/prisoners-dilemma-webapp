@@ -58,12 +58,11 @@ class Game(models.Model):
 
     def add_player(self, player_id):
         if self.is_player_one_present == False:
-            response = self._add_player_one(player_id)
+            return self._add_player_one(player_id)
         elif self.is_player_two_present == False:
-            response = self._add_player_two(player_id)
+            return self._add_player_two(player_id)
         else:
-            response = self._response_player_addition(self.name + " is full", player_id, "NONE")
-        return response
+            return self._response_player_addition(self.name + " is full", player_id, "NONE")
 
     def _add_player_one(self, player_id):
         if player_id != "NONE":
