@@ -702,7 +702,7 @@ class GameManagerTests(TestCase):
 
         self.assertIsNotNone(event)
         self.assertIsNotNone(data)
-        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(event, "player_added")
         self.assertEqual(data["player_id"], player.id)
         self.assertEqual(data["standin_id"], "ONE")
 
@@ -714,7 +714,7 @@ class GameManagerTests(TestCase):
 
         self.assertIsNotNone(event)
         self.assertIsNotNone(data)
-        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(event, "player_added")
         self.assertEqual(data["player_id"], player.id)
         self.assertEqual(data["standin_id"], "TWO")
 
@@ -733,7 +733,7 @@ class GameManagerTests(TestCase):
 
         self.assertIsNotNone(event)
         self.assertIsNotNone(data)
-        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(event, "player_added")
         self.assertEqual(data["player_id"], "NONE")
         self.assertEqual(data["standin_id"], "ONE")
         self.assertIsNone(data["error"])
@@ -743,7 +743,7 @@ class GameManagerTests(TestCase):
 
         self.assertIsNotNone(event)
         self.assertIsNotNone(data)
-        self.assertEqual(event, "player_added_successfully")
+        self.assertEqual(event, "player_added")
         self.assertEqual(data["player_id"], "NONE")
         self.assertEqual(data["standin_id"], "TWO")
         self.assertIsNone(data["error"])

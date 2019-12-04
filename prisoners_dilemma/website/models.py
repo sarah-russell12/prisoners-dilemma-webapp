@@ -110,31 +110,31 @@ class Game(models.Model):
         return self._resolve_round()
 
     def _error_completed_game(self):
-        response = self._get_game_state()
+        response = self.get_game_state()
         response["error"] = self.name + " is already completed"
         return response
 
     def _error_already_acted(self):
-        response = self._get_game_state()
+        response = self.get_game_state()
         response["error"] = "You have already acted this round"
         return response
 
     def _error_player_not_in_game(self):
-        response = self._get_game_state()
+        response = self.get_game_state()
         response["error"] = "You are not a player in " + self.name
         return response
 
     def _resolve_round(self):
         if self.is_complete():
             self._resolve_points()
-            response = self._get_game_state()
+            response = self.get_game_state()
             self._end_game()
         elif self.round_complete():
             self._resolve_points()
-            response = self._get_game_state()
+            response = self.get_game_state()
             self._next_round()
         else:
-            response = self._get_game_state()
+            response = self.get_game_state()
         return response
 
     def _resolve_points(self):
@@ -174,7 +174,7 @@ class Game(models.Model):
         self.player_two_action = "NONE"
         self.save()
 
-    def _get_game_state(self):
+    def get_game_state(self):
         response = {}
         response["player_one_points"] = self.player_one_points
         response["player_two_points"] = self.player_two_points
@@ -226,4 +226,7 @@ class Game(models.Model):
             game = Game.objects.get(name=game_name)
         except ObjectDoesNotExist:
             return False
-        return not game.is_complete()
+        return (not game.is_complete()) and game._are_both_players_present()
+
+    def _are_both_players_present(self):
+        return self.is_player_one_present and self.is_player_two_present

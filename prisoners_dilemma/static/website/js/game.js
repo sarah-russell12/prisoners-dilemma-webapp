@@ -13,55 +13,65 @@ socket.on('message_received', (message) => {
 
 socket.on('enqueue_response', (message) => {
     console.log(message);
-    waiting_for_game_display();
 });
 
-socket.on('game_found', (message) => {
-    console.log(message);
+socket.on('game_created', (message) => {
+    console.log(message["game_name"] + " created");
     window.localStorage.setItem("game_name", message["game_name"]);
     add_player();
 });
 
-socket.on('add_player_response', (message) => {
+socket.on('player_added', (message) => {
     // client recieves a "ONE" or "TWO" from the purpose of updating the game display
+    console.log("You are player " + message["standin_id"]);
     window.localStorage.setItem("standin_id", message["standin_id"]);
 });
 
-socket.on('error_response', (message) => {
-    console.log(message);
+socket.on('error', (message) => {
+    console.log("Error: " + message["error"]);
     error_display(message);
 });
 
 socket.on('start_game', (message) => {
-    console.log(message);
+    console.log("Starting game");
     game_status_display();
     update_game_status_display(message);
     player_choice_display();
 });
 
 socket.on('player_action_response', (message) => {
-    console.log(message);
+    console.log("Game has logged a player's action");
     update_game_status_display(message);
+    console.log("You are player " + window.localStorage.getItem("standin_id"));
 });
 
 socket.on('new_round', (message) => {
-    console.log(message);
+    console.log("A new round has started");
     update_game_status_display(message);
     player_choice_display();
 })
+
+socket.on('end_game', (message) => {
+    console.log("End of game");
+    update_game_status_display(message);
+    end_game_display();
+});
 
 // Sending messages
 function enqueue() {
     console.log("Sending queue request");
     socket.emit("enqueue");
     console.log("Queue request sent");
-    queued_for_game_display();
+    waiting_for_game_display();
 }
 
 function add_player() {
     // client sends player id, if applicable, to the server
     console.log("Sending add player request")
-    data = get_game_data();
+    data = {};
+    data.player_id = window.localStorage.getItem("player_id");
+    data.game_name = window.localStorage.getItem("game_name");
+    console.log(data);
     socket.emit("add_player", data);
     console.log("Add player request sent");
 }
@@ -70,8 +80,10 @@ function cooperate() {
     console.log("Sending cooperate action");
     data = get_game_data();
     data.action = "COOP";
+    console.log(data);
     socket.emit("player_action", data);
     console.log("Action sent");
+    console.log("You")
     waiting_for_next_round_display();
 }
 
@@ -79,6 +91,7 @@ function do_not_cooperate() {
     console.log("Sending no cooperation action");
     data = get_game_data();
     data.action = "SELF";
+    console.log(data);
     socket.emit("player_action", data);
     console.log("Action sent");
     waiting_for_next_round_display();
@@ -94,15 +107,15 @@ function leave_game() {
 
 function get_game_data() {
     data = {};
-    data.player_id = get_player_id()
-    data.game_name = localStorage.getItem("game_name");
+    data.player_id = get_player_id();
+    data.game_name = window.localStorage.getItem("game_name");
     return data;
 }
 
 function get_player_id() {
-    player_id = localStorage.getItem("player_id");
+    player_id = window.localStorage.getItem("player_id");
     if (player_id == "NONE") {
-        return localStorage.getItem("standin_id");
+        return window.localStorage.getItem("standin_id");
     } else {
         return parseInt(player_id);
     }
@@ -147,6 +160,18 @@ function game_status_display() {
     add_div(status_div);
 }
 
+function end_game_display() {
+    var p = document.createElement("p");
+    p.innerText = "Game Over! Would you like to play again?";
+    var end_div = create_div("game", p);
+    var button = document.createElement("button");
+    button.type = "button";
+    button.onclick = start_display;
+    button.innerText = "Play Again";
+    end_div.appendChild(button);
+    add_div(end_div);
+}
+
 function start_display() {
     remove_div("game");
     remove_div("status");
@@ -162,12 +187,12 @@ function start_display() {
 }
 
 function update_game_status_display(message) {
-    document.getElementById("game_name").innerText = message["game_name"];
+    document.getElementById("game_name").innerText = window.localStorage.getItem("game_name");
     document.getElementById("round").innerText = message["round"].toString();
     if (window.localStorage.getItem("standin_id") == "ONE") {
         update_status_player_one(message);
     }
-    else if (window.localStorage.getItem("standin_id" == "TWO")) {
+    else if (window.localStorage.getItem("standin_id") == "TWO") {
         update_status_player_two(message);
     }
 }
@@ -225,7 +250,7 @@ function create_cooperation_button() {
     var button = document.createElement("button");
     button.innerText = "Cooperate";
     button.type = "button";
-    button.onclick = "cooperate()";
+    button.onclick = cooperate;
     return button;
 }
 
@@ -233,7 +258,7 @@ function create_self_button() {
     var button = document.createElement("button");
     button.innerText = "Don't Cooperate";
     button.type = "button";
-    button.onclick = "do_not_cooperate()";
+    button.onclick = do_not_cooperate;
     return button;
 }
 
@@ -241,7 +266,8 @@ function create_leave_button() {
     var button = document.createElement("button");
     button.innerText = "Leave Game";
     button.type = "button";
-    button.onclick = "leave_game()";
+    // server side leave game not yet implemented
+    // button.onclick = "leave_game()";
     return button;
 }
 
